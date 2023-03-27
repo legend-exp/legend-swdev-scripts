@@ -149,7 +149,7 @@ cmd('make install')
 os.chdir('..')
 
 # install MaGe
-cmd(f'{preconfigure}cmake -S MaGe/source -B MaGe/build -DCMAKE_CXX_STANDARD=14 -DCMAKE_INSTALL_PREFIX={install_path}')
+cmd(f'{preconfigure}cmake -S MaGe/source -B MaGe/build -DCMAKE_CXX_STANDARD=17 -DCMAKE_INSTALL_PREFIX={install_path}')
 os.chdir('MaGe/build')
 cmd(f'make -j{args.jobs}')
 cmd('make install')
