@@ -51,6 +51,11 @@ parser.add_argument('--mppfork', type=str, default='legend-exp',
 parser.add_argument('--mppbranch', type=str, default='main',
                     help="Git branch to install MPP from")
 
+parser.add_argument('--pipinstallglobal',  action='store_true', default=False,
+                    help="Install magepostproc module to global site-packages")
+parser.add_argument('--pipinstalluser',  action='store_true', default=False,
+                    help="Install magepostproc module to user site-packages")
+
 args = parser.parse_args()
 
 original_pwd = os.getcwd()
@@ -142,7 +147,7 @@ except subprocess.CalledProcessError:
 
 # install MGDO
 os.chdir('MGDO')
-cmd(f'{preconfigure}./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree')
+cmd(f'{preconfigure}./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree LDFLAGS=-Wl,-rpath,\\\'\'$$ORIGIN\'\\\'/../lib')
 cmd(f'make svninfo static -j{args.jobs}')
 cmd('make')
 cmd('make install')
@@ -160,9 +165,14 @@ os.chdir('../..')
 
 # install mage-post-proc
 os.chdir('mage-post-proc')
-cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path}')
-cmd(f'make -C build -j{args.jobs} install')
+cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_INSTALL_RPATH=\'$ORIGIN\'')
+cmd(f'make -Cbuild -j{args.jobs} install')
 os.chdir(original_pwd)
+
+if(args.pipinstallglobal):
+    cmd(f'python -m pip install {install_path}/lib/magepostproc/')
+if(args.pipinstalluser):
+    cmd(f'python -m pip install --user {install_path}/lib/magepostproc/')
 
 print('Installation complete. If desired, add the following line to your login script.')
 print('source', pwd + '/setup_mage.sh')
