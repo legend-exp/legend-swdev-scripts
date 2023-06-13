@@ -147,7 +147,7 @@ except subprocess.CalledProcessError:
 
 # install MGDO
 os.chdir('MGDO')
-cmd(f'{preconfigure}./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree LDFLAGS=-Wl,-rpath,\\\'\'$$ORIGIN\'\\\'/../lib')
+cmd(f'{preconfigure}./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree')
 cmd(f'make svninfo static -j{args.jobs}')
 cmd('make')
 cmd('make install')
@@ -164,15 +164,16 @@ cmd('make install')
 os.chdir('../..')
 
 # install mage-post-proc
+mpp_cmake_opts = ''
+if(args.pipinstallglobal):
+    mpp_cmake_opts += f" -DPYTHON_EXE={sys.executable} -DPIP_GLOBAL_INSTALL=ON"
+if(args.pipinstalluser):
+    mpp_cmake_opts += f" -DPYTHON_EXE={sys.executable} -DPIP_USER_INSTALL=ON"
+
 os.chdir('mage-post-proc')
-cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_INSTALL_RPATH=\'$ORIGIN\'')
+cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path} {mpp_cmake_opts}')
 cmd(f'make -Cbuild -j{args.jobs} install')
 os.chdir(original_pwd)
-
-if(args.pipinstallglobal):
-    cmd(f'python -m pip install {install_path}/lib/magepostproc/')
-if(args.pipinstalluser):
-    cmd(f'python -m pip install --user {install_path}/lib/magepostproc/')
 
 print('Installation complete. If desired, add the following line to your login script.')
 print('source', pwd + '/setup_mage.sh')
