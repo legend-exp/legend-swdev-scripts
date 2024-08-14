@@ -38,11 +38,11 @@ parser.add_argument('-a', '--authentication', type=str,
 parser.add_argument('-j', '--jobs', type=int, default=1,
                     help="Number of threads to run with Make")
 
-parser.add_argument('--mgdofork', type=str, default='mppmu',
+parser.add_argument('--mgdofork', type=str, default='legend-exp',
                     help="Github fork to install MGDO from")
 parser.add_argument('--mgdobranch', type=str, default='master',
                     help="Git branch to install MGDO from")
-parser.add_argument('--magefork', type=str, default='mppmu',
+parser.add_argument('--magefork', type=str, default='legend-exp',
                     help="Github fork to install MaGe from")
 parser.add_argument('--magebranch', type=str, default='main',
                     help="Git branch to install MaGe from")
