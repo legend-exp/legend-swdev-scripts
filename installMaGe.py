@@ -38,11 +38,11 @@ parser.add_argument('-a', '--authentication', type=str,
 parser.add_argument('-j', '--jobs', type=int, default=1,
                     help="Number of threads to run with Make")
 
-parser.add_argument('--mgdofork', type=str, default='mppmu',
+parser.add_argument('--mgdofork', type=str, default='legend-exp',
                     help="Github fork to install MGDO from")
 parser.add_argument('--mgdobranch', type=str, default='master',
                     help="Git branch to install MGDO from")
-parser.add_argument('--magefork', type=str, default='mppmu',
+parser.add_argument('--magefork', type=str, default='legend-exp',
                     help="Github fork to install MaGe from")
 parser.add_argument('--magebranch', type=str, default='main',
                     help="Git branch to install MaGe from")
@@ -51,10 +51,15 @@ parser.add_argument('--mppfork', type=str, default='legend-exp',
 parser.add_argument('--mppbranch', type=str, default='main',
                     help="Git branch to install MPP from")
 
-parser.add_argument('--pipinstallglobal',  action='store_true', default=False,
+parser.add_argument('--pipinstallnone', dest='pip', action='store_const',
+                    const="none", default="user",
+                    help="Do not pip install magepostproc module")
+parser.add_argument('--pipinstallglobal', dest='pip',  action='store_const',
+                    const="global", default="user",
                     help="Install magepostproc module to global site-packages")
-parser.add_argument('--pipinstalluser',  action='store_true', default=False,
-                    help="Install magepostproc module to user site-packages")
+parser.add_argument('--pipinstalluser', dest='pip', action='store_const',
+                    const="user", default="user",
+                    help="Install magepostproc module to user site-packages (this is the default)")
 
 args = parser.parse_args()
 
@@ -171,9 +176,9 @@ os.chdir(pwd)
 
 # install mage-post-proc
 mpp_cmake_opts = ''
-if(args.pipinstallglobal):
+if(args.pip=="global"):
     mpp_cmake_opts += f" -DPYTHON_EXE={sys.executable} -DPIP_GLOBAL_INSTALL=ON"
-if(args.pipinstalluser):
+if(args.pip=="user"):
     mpp_cmake_opts += f" -DPYTHON_EXE={sys.executable} -DPIP_USER_INSTALL=ON"
 
 cmd("pwd")
